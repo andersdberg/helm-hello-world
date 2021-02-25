@@ -1,5 +1,8 @@
 # Hello World
 
+## Minikube
+Start with a fresh minikube instance prior to each demo, `minikube delete && minikube start`
+
 ## Flux2
 ### Installation
 Install CLI on MacOS
@@ -64,5 +67,51 @@ spec:
         name: app
         namespace: flux-system
       interval: 1m
+EOF
+```
+
+## ArgoCD
+Create `argocd` namespace
+`kubectl create namespace argocd`
+
+Install ArgoCD
+`kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml`
+
+Install ArgoCD CLI (MacOS)
+`brew install argocd`
+
+Expose API server (and dashboard)
+`kubectl port-forward svc/argocd-server -n argocd 8080:443`
+The username is `admin` and the password can be retrieved with:
+`kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o name | cut -d'/' -f 2`
+
+Login to argocd cli with the username and password from above
+`argocd login localhost:8080`
+
+Add the cluster
+`argocd cluster add minikube`
+
+Create the application
+```
+cat <<EOF | kubectl apply -f -
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/andersdberg/helm-hello-world
+    targetRevision: HEAD
+    path: charts/app
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
 EOF
 ```
