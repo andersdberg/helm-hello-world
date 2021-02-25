@@ -42,11 +42,6 @@ spec:
   url: https://github.com/andersdberg/helm-hello-world
   ref:
     branch: main
-  ignore: |
-    # exclude all
-    /*
-    # include charts directory
-    !/charts/
 EOF
 ```
 
@@ -57,19 +52,17 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: app
-  namespace: default
+  namespace: flux-system
 spec:
   interval: 5m
   chart:
     spec:
-      chart: app
+      chart: charts/app
       version: '0.1.0'
       sourceRef:
         kind: GitRepository
         name: app
         namespace: flux-system
       interval: 1m
-  values:
-    replicaCount: 2
 EOF
 ```
