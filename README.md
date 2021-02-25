@@ -5,13 +5,13 @@ Start with a fresh minikube instance prior to each demo, `minikube delete && min
 
 ## Flux2
 ### Installation
-Install CLI on MacOS
+#### Install CLI on MacOS
 `brew install fluxcd/tap/flux`
 
-Check cluster prerequisites
+#### Check cluster prerequisites
 `flux check --pre`
 
-Bootstrap
+#### Bootstrap
 ```
 flux bootstrap github \
   --components=source-controller,kustomize-controller,helm-controller,notification-controller \
@@ -24,13 +24,13 @@ flux bootstrap github \
   --personal=true
 ```
 
-Verify
+#### Verify
 `flux check`
 
-#### Terraform
+#### Terraform Bootstrap Alternative
 Flux can also be bootstrapped with the flux Terraform provider that offers two resources: `flux_install` and `flux_sync`
 
-### Manage Helm Releases
+### Operation
 #### Define Chart Source
 To use a Git repository, create a `GitRepository` resource. Can also use `HelmRepository`.
 ```
@@ -71,27 +71,29 @@ EOF
 ```
 
 ## ArgoCD
-Create `argocd` namespace
+### Installation
+#### Create `argocd` namespace
 `kubectl create namespace argocd`
 
-Install ArgoCD
+#### Install ArgoCD
 `kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml`
 
-Install ArgoCD CLI (MacOS)
+#### Install ArgoCD CLI (MacOS)
 `brew install argocd`
 
-Expose API server (and dashboard)
+#### Expose API server (and dashboard)
 `kubectl port-forward svc/argocd-server -n argocd 8080:443`
 The username is `admin` and the password can be retrieved with:
 `kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o name | cut -d'/' -f 2`
 
-Login to argocd cli with the username and password from above
+#### Login to argocd cli with the username and password from above
 `argocd login localhost:8080`
 
-Add the cluster
+#### Add the cluster
 `argocd cluster add minikube`
 
-Create the application
+### Operation
+#### Create the application
 ```
 cat <<EOF | kubectl apply -f -
 apiVersion: argoproj.io/v1alpha1
